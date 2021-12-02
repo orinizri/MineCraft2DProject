@@ -1,7 +1,7 @@
-export let inventory = document.querySelector("#inventory")
-import { setInventory, ToolKit } from "./inventory.js"
-// console.log(inventory)
+
+let inventory = document.querySelector("#inventory") 
 let gameBoard = document.querySelector("#game-board")
+
 //console.log(gameBoard)
 
 let matrix = []
@@ -37,7 +37,6 @@ function drawMatrix(matrix) {
 }
 
 (drawMatrix(startMatrix()))
-
 const divs = document.querySelectorAll(".brick")
 
 function buildWorld(material, xStart, xEnd, yStart, yEnd) {
@@ -51,6 +50,26 @@ function buildWorld(material, xStart, xEnd, yStart, yEnd) {
         }
     })
 }
+const ToolKit = {
+    axeStone: { name: "axeStone", id: 0 },
+    shovel: { name: "shovel", id: 1 },
+    axeTree: { name: "axeTree", id: 2 },
+}
+function setInventory (ItemsObj) {
+    Object.entries(ItemsObj).forEach((key, value) => {
+        let newItem = document.createElement("div")
+        newItem.classList.add("item-container")
+        newItem.innerHTML = `<div class="item" data-type='${key[0]}'></div><span>${key[0]}</span>`
+        inventory.appendChild(newItem)
+    });
+} 
+function getPosition() {
+    divs.forEach( (div) => {
+        div.addEventListener("click", (e) => {
+            return console.log(e.target.dataset.x , e.target.dataset.y, e.target.dataset.type)
+        })
+    })
+}
 
 buildWorld("ground", 0, 20, 15, 20);
 buildWorld("grassGround", 0, 20, 14, 14);
@@ -58,3 +77,14 @@ buildWorld("oak", 5, 5, 12, 13);
 buildWorld("leaves", 4, 6, 9, 11);
 buildWorld("cloud", 15, 17, 7, 8);
 setInventory(ToolKit)
+
+function getItem () {
+    const items = document.querySelectorAll(".item-container")
+    console.log(items)
+}
+function useItem () {
+    console.log(getPosition())
+    console.log(inventory.children[0])
+}
+
+useItem()
