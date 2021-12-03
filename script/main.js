@@ -63,16 +63,23 @@ function setInventory(ItemsObj) {
         inventory.appendChild(newItem)
     });
 }
+let lastPosition = [];
 function getPosition() {
     divs.forEach((div) => {
         div.addEventListener("click", (e) => {
             let x = e.target.dataset.x
             let y = e.target.dataset.y
             let type = e.target.dataset.type
-            return x,y,type
+            lastPosition.push({
+                'x' : x, 
+                'y' : y,
+                'type' : type
+            })
+            return e.target
         })
     })
 }
+
 
 buildWorld("ground", 0, 20, 15, 20);
 buildWorld("grassGround", 0, 20, 14, 14);
@@ -85,24 +92,52 @@ setInventory(ToolKit);
 function getItem() {
     const items = document.querySelectorAll(".item-container")
     items.forEach((item) => {
-        item.firstElementChild.addEventListener("click", () => {
-            item.firstElementChild.dataset.use === 'true' ?
-            item.firstElementChild.dataset.use = false :
-            item.firstElementChild.dataset.use = true;
-            console.log(item.firstElementChild.dataset)
-            item.dataset.chosen = item.firstElementChild.dataset.use
+        let itemChosen = item.firstElementChild
+        itemChosen.dataset.use = 'null';
+        item.firstElementChild.addEventListener("click", () => { // loop over item container's first child 
+            // toggle dataset-use attribute for item functionality (use - true/not use - false)
+            if (itemChosen.dataset.use === 'true') {
+                itemChosen.dataset.use = false;
+            } else {
+                itemChosen.dataset.use = true;
+            }
+            item.dataset.chosen = itemChosen.dataset.use;
         })
     })
+    return items
 }
 
+// console.log(getItem())
 
-console.log(getItem())
+    function useItem () {
+        let items = getItem()
+        inventory.addEventListener("click", () => {
+            for (let item of items) {
+                if (item.firstElementChild.dataset.use == "true") {
+                    let activeItem = item.firstElementChild.dataset.type
+                    return activeItem;
 
-        function useItem () {
-            // let gamePosition = getPosition()
-            // let item = getItem()
-            // console.log(item,gamePosition)
-            
-        }
+                }
 
-useItem()
+            }
+        })
+    }
+
+    function removeBrick () {
+        let item = useItem()
+        console.log(item)
+        let location = getPosition()
+        console.log(location)
+
+        
+        // location.forEach( (att) => {
+        //     console.log(att)
+        // })
+        // for (let i=0 ; i<divs.length ; i++) {
+        //     console.log(divs[i].dataset)
+        // }
+        
+    }
+        
+
+console.log(removeBrick())
