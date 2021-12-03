@@ -55,7 +55,7 @@ main {
     align-items: center;
 }
 .item-container {
-    border: 1px solid white;
+    border: 2px solid white;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -70,6 +70,10 @@ main {
     width: 7vmin;
     padding: 2vmin;
     
+}
+div.item-container[data-chosen='true'] {
+    background-color: blue;
+    border: 2px solid white;
 }
 div[data-type='sky'] {
     background-color: var(--sky-color);

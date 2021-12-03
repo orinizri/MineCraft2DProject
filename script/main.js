@@ -1,5 +1,5 @@
 
-let inventory = document.querySelector("#inventory") 
+let inventory = document.querySelector("#inventory")
 let gameBoard = document.querySelector("#game-board")
 
 //console.log(gameBoard)
@@ -55,18 +55,21 @@ const ToolKit = {
     shovel: { name: "shovel", id: 1 },
     axeTree: { name: "axeTree", id: 2 },
 }
-function setInventory (ItemsObj) {
+function setInventory(ItemsObj) {
     Object.entries(ItemsObj).forEach((key, value) => {
         let newItem = document.createElement("div")
         newItem.classList.add("item-container")
         newItem.innerHTML = `<div class="item" data-type='${key[0]}'></div><span>${key[0]}</span>`
         inventory.appendChild(newItem)
     });
-} 
+}
 function getPosition() {
-    divs.forEach( (div) => {
+    divs.forEach((div) => {
         div.addEventListener("click", (e) => {
-            return console.log(e.target.dataset.x , e.target.dataset.y, e.target.dataset.type)
+            let x = e.target.dataset.x
+            let y = e.target.dataset.y
+            let type = e.target.dataset.type
+            return x,y,type
         })
     })
 }
@@ -76,15 +79,30 @@ buildWorld("grassGround", 0, 20, 14, 14);
 buildWorld("oak", 5, 5, 12, 13);
 buildWorld("leaves", 4, 6, 9, 11);
 buildWorld("cloud", 15, 17, 7, 8);
-setInventory(ToolKit)
+setInventory(ToolKit);
 
-function getItem () {
+
+function getItem() {
     const items = document.querySelectorAll(".item-container")
-    console.log(items)
+    items.forEach((item) => {
+        item.firstElementChild.addEventListener("click", () => {
+            item.firstElementChild.dataset.use === 'true' ?
+            item.firstElementChild.dataset.use = false :
+            item.firstElementChild.dataset.use = true;
+            console.log(item.firstElementChild.dataset)
+            item.dataset.chosen = item.firstElementChild.dataset.use
+        })
+    })
 }
-function useItem () {
-    console.log(getPosition())
-    console.log(inventory.children[0])
-}
+
+
+console.log(getItem())
+
+        function useItem () {
+            // let gamePosition = getPosition()
+            // let item = getItem()
+            // console.log(item,gamePosition)
+            
+        }
 
 useItem()
