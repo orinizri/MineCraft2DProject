@@ -3,7 +3,7 @@ let inventory = document.querySelector("#inventory")
 let gameBoard = document.querySelector("#game-board")
 
 //console.log(gameBoard)
-
+const memoryCell = 5;
 let matrix = []
 
 const Material = {
@@ -75,17 +75,18 @@ function getPosition() {
                 'y' : y,
                 'type' : type
             })
-            return e.target
+            removeWithTool()
         })
     })
 }
-
-
+getPosition()
 buildWorld("ground", 0, 20, 15, 20);
 buildWorld("grassGround", 0, 20, 14, 14);
 buildWorld("oak", 5, 5, 12, 13);
 buildWorld("leaves", 4, 6, 9, 11);
 buildWorld("cloud", 15, 17, 7, 8);
+buildWorld("stone", 14, 15, 13, 13);
+buildWorld("stone", 19, 19, 13, 13);
 setInventory(ToolKit);
 
 
@@ -107,37 +108,54 @@ function getItem() {
     return items
 }
 
-// console.log(getItem())
-
-    function useItem () {
-        let items = getItem()
-        inventory.addEventListener("click", () => {
-            for (let item of items) {
-                if (item.firstElementChild.dataset.use == "true") {
-                    let activeItem = item.firstElementChild.dataset.type
-                    return activeItem;
-
-                }
-
+const activeTool = [];
+function useItem () {
+    let items = getItem()
+    inventory.addEventListener("click", () => {
+        for (let item of items) {
+            if (item.firstElementChild.dataset.use == "true") {
+                activeTool.push(item.firstElementChild.dataset.type)
+            } else if (item.firstElementChild.dataset.use == "false") {
+                activeTool.pop()
             }
-        })
+        }
+        console.log(activeTool)
+    })
+}
+useItem()
+
+const memory = [];
+function removeWithTool () {
+    if (lastPosition[lastPosition.length-1]) {
+        if (activeTool) {
+            if ((lastPosition[lastPosition.length-1]['type'] === 'ground' || lastPosition[lastPosition.length-1]['type'] === 'grassGround') && activeTool[0] === 'shovel') {
+                let brick = [...divs].filter( div => {
+                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+                })
+                //let memoryCell = document.createElement("div")
+                //memoryCell.innerHTML = `<div class="item" data-type='${brick[0].dataset.type}' data-status='removed'></div>`
+                //inventory.appendChild(memoryCell)
+                memory.push(brick[0].dataset.type)
+                brick[0].dataset.type = 'sky'
+                console.log(inventory)
+                console.log(memory)
+            } else if ((lastPosition[lastPosition.length-1]['type'] === 'oak' || lastPosition[lastPosition.length-1]['type'] === 'leaves') && activeTool[0] === 'axeTree') {
+                let brick = [...divs].filter( div => {
+                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+                })
+                brick[0].dataset.type = 'sky'
+            } else if (lastPosition[lastPosition.length-1]['type'] === 'stone' && activeTool[0] === 'axeStone') {
+                let brick = [...divs].filter( div => {
+                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+                })
+                brick[0].dataset.type = 'sky'
+            }
+        }
+        console.log(lastPosition[lastPosition.length-1]['type'])
     }
+}
+removeWithTool()
 
-    function removeBrick () {
-        let item = useItem()
-        console.log(item)
-        let location = getPosition()
-        console.log(location)
+function memorySpan (memoryCells) {
 
-        
-        // location.forEach( (att) => {
-        //     console.log(att)
-        // })
-        // for (let i=0 ; i<divs.length ; i++) {
-        //     console.log(divs[i].dataset)
-        // }
-        
-    }
-        
-
-console.log(removeBrick())
+}

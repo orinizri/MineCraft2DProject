@@ -51,8 +51,9 @@ main {
     background-color: black;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    overflow: hidden;
 }
 .item-container {
     border: 2px solid white;
@@ -69,7 +70,6 @@ main {
     height: 7vmin;
     width: 7vmin;
     padding: 2vmin;
-    
 }
 div.item-container[data-chosen='true'] {
     background-color: blue;
@@ -110,6 +110,18 @@ div[data-type='axeStone'] {
 div[data-type='axeTree'] {
     background-image: url(/images/axe.png);
     background-size: cover;
+}
+div[data-type='stone'] {
+    background-image: url(/images/stone.png);
+    background-size: cover;
+}
+div[data-status='removed'] {
+    border: 2px solid white;
+    cursor: pointer;
+    width: 1vmin;
+    height: 1vmin;
+    margin: 1vmin;
+    
 }
 .brick {
     cursor: pointer;
