@@ -1,9 +1,9 @@
 
 let inventory = document.querySelector("#inventory")
 let gameBoard = document.querySelector("#game-board")
+let memorySection = document.querySelector("#memory")
 
-//console.log(gameBoard)
-const memoryCell = 5;
+const memoryCell = 3;
 let matrix = []
 
 const Material = {
@@ -25,6 +25,7 @@ function startMatrix() {
     }
     return matrix;
 }
+
 function drawMatrix(matrix) {
     for (let i = 1; i < 21; i++) {
         for (let j = 1; j < 21; j++) {
@@ -50,20 +51,24 @@ function buildWorld(material, xStart, xEnd, yStart, yEnd) {
         }
     })
 }
+
 const ToolKit = {
     axeStone: { name: "axeStone", id: 0 },
     shovel: { name: "shovel", id: 1 },
-    axeTree: { name: "axeTree", id: 2 },
+    axeTree: { name: "axeTree", id: 2 }
 }
+
 function setInventory(ItemsObj) {
-    Object.entries(ItemsObj).forEach((key, value) => {
+    Object.entries(ItemsObj).forEach((key) => {
         let newItem = document.createElement("div")
         newItem.classList.add("item-container")
         newItem.innerHTML = `<div class="item" data-type='${key[0]}'></div><span>${key[0]}</span>`
         inventory.appendChild(newItem)
     });
 }
+
 let lastPosition = [];
+
 function getPosition() {
     divs.forEach((div) => {
         div.addEventListener("click", (e) => {
@@ -71,14 +76,15 @@ function getPosition() {
             let y = e.target.dataset.y
             let type = e.target.dataset.type
             lastPosition.push({
-                'x' : x, 
-                'y' : y,
-                'type' : type
+                'x': x,
+                'y': y,
+                'type': type
             })
             removeWithTool()
         })
     })
 }
+
 getPosition()
 buildWorld("ground", 0, 20, 15, 20);
 buildWorld("grassGround", 0, 20, 14, 14);
@@ -89,7 +95,6 @@ buildWorld("stone", 14, 15, 13, 13);
 buildWorld("stone", 19, 19, 13, 13);
 setInventory(ToolKit);
 
-
 function getItem() {
     const items = document.querySelectorAll(".item-container")
     items.forEach((item) => {
@@ -97,9 +102,9 @@ function getItem() {
         itemChosen.dataset.use = 'null';
         item.firstElementChild.addEventListener("click", () => { // loop over item container's first child 
             // toggle dataset-use attribute for item functionality (use - true/not use - false)
-            if (itemChosen.dataset.use === 'true') {
+            if (itemChosen.dataset.use === 'true' && activeTool.length === 1) {
                 itemChosen.dataset.use = false;
-            } else {
+            } else if (activeTool.length === 0) {
                 itemChosen.dataset.use = true;
             }
             item.dataset.chosen = itemChosen.dataset.use;
@@ -109,10 +114,11 @@ function getItem() {
 }
 
 const activeTool = [];
-function useItem () {
+function useItem() {
     let items = getItem()
     inventory.addEventListener("click", () => {
         for (let item of items) {
+            console.log(item)
             if (item.firstElementChild.dataset.use == "true") {
                 activeTool.push(item.firstElementChild.dataset.type)
             } else if (item.firstElementChild.dataset.use == "false") {
@@ -124,38 +130,80 @@ function useItem () {
 }
 useItem()
 
-const memory = [];
-function removeWithTool () {
-    if (lastPosition[lastPosition.length-1]) {
+let memory = [];
+function removeWithTool() {
+    if (lastPosition[lastPosition.length - 1]) {
         if (activeTool) {
-            if ((lastPosition[lastPosition.length-1]['type'] === 'ground' || lastPosition[lastPosition.length-1]['type'] === 'grassGround') && activeTool[0] === 'shovel') {
-                let brick = [...divs].filter( div => {
-                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+            if (memory.length === 0 &&
+                lastPosition[lastPosition.length - 1]['type'] !== "sky" &&
+                lastPosition[lastPosition.length - 1]['type'] !== "cloud") {
+                createMemory(memoryCell)
+            }
+            if ((lastPosition[lastPosition.length - 1]['type'] === 'ground' ||
+                lastPosition[lastPosition.length - 1]['type'] === 'grassGround') &&
+                activeTool[0] === 'shovel') {
+                let brick = [...divs].filter(div => {
+                    return (div.dataset.x === lastPosition[lastPosition.length - 1]['x'] &&
+                        div.dataset.y === lastPosition[lastPosition.length - 1]['y'])
                 })
-                //let memoryCell = document.createElement("div")
-                //memoryCell.innerHTML = `<div class="item" data-type='${brick[0].dataset.type}' data-status='removed'></div>`
-                //inventory.appendChild(memoryCell)
                 memory.push(brick[0].dataset.type)
+                updateMemory(memoryCell)
                 brick[0].dataset.type = 'sky'
-                console.log(inventory)
-                console.log(memory)
-            } else if ((lastPosition[lastPosition.length-1]['type'] === 'oak' || lastPosition[lastPosition.length-1]['type'] === 'leaves') && activeTool[0] === 'axeTree') {
-                let brick = [...divs].filter( div => {
-                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+            } else if ((lastPosition[lastPosition.length - 1]['type'] === 'oak' ||
+                lastPosition[lastPosition.length - 1]['type'] === 'leaves') &&
+                activeTool[0] === 'axeTree') {
+                let brick = [...divs].filter(div => {
+                    return (div.dataset.x === lastPosition[lastPosition.length - 1]['x'] &&
+                        div.dataset.y === lastPosition[lastPosition.length - 1]['y'])
                 })
+                memory.push(brick[0].dataset.type)
+                updateMemory(memoryCell)
                 brick[0].dataset.type = 'sky'
-            } else if (lastPosition[lastPosition.length-1]['type'] === 'stone' && activeTool[0] === 'axeStone') {
-                let brick = [...divs].filter( div => {
-                    return (div.dataset.x ===lastPosition[lastPosition.length-1]['x'] && div.dataset.y ===lastPosition[lastPosition.length-1]['y'])
+            } else if (lastPosition[lastPosition.length - 1]['type'] === 'stone' &&
+                activeTool[0] === 'axeStone') {
+                let brick = [...divs].filter(div => {
+                    return (div.dataset.x === lastPosition[lastPosition.length - 1]['x'] &&
+                        div.dataset.y === lastPosition[lastPosition.length - 1]['y'])
                 })
+                memory.push(brick[0].dataset.type)
+                updateMemory(memoryCell)
                 brick[0].dataset.type = 'sky'
             }
+            useMemory()
         }
-        console.log(lastPosition[lastPosition.length-1]['type'])
     }
 }
 removeWithTool()
 
-function memorySpan (memoryCells) {
+function createMemory(numberOfCells) {
+    for (let i = numberOfCells; i > 0; i--) {
+        let newMemoryCell = document.createElement("div")
+        newMemoryCell.classList.add("memory-container")
+        newMemoryCell.innerHTML = `<div class="memory c${numberOfCells - i}"></div>`
+        memorySection.appendChild(newMemoryCell)
+    }
+}
+function updateMemory(numberOfCells) {
+    const memoryDiv = document.querySelectorAll(".memory-container")
+    //console.log(memoryDiv)
+    for (let i = -1, j = 0; i >= -numberOfCells; i--, j++) {
+        memoryDiv[j].firstElementChild.dataset.type = memory[memory.length + (i)]
+    }
+    return memoryDiv
+}
 
+function useMemory () {
+    const mc = document.querySelectorAll(".memory")
+    //console.log(mc)
+    let definedCells = Array.from(mc).filter( (cell) => {
+            return (cell.dataset.type !== "undefined")
+    })
+    //console.log(definedCells)
+    definedCells.forEach( (cell) => {
+        cell.addEventListener("click", () => {
+            // activeTool.pop()
+            console.log(cell.dataset)
+        })
+
+    })
 }

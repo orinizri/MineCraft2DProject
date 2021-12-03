@@ -45,9 +45,10 @@ main {
     grid-template-rows: repeat(20, 1fr);
     grid-template-columns: repeat(20, 1fr);
 }
-#inventory {
+#inventory,
+#memory {
     width: 20vmin;
-    height: 100vmin;
+    height: 60vmin;
     background-color: black;
     display: flex;
     flex-direction: column;
@@ -55,7 +56,11 @@ main {
     align-items: center;
     overflow: hidden;
 }
-.item-container {
+#memory {
+    height: 40vmin;
+}
+.item-container,
+.memory-container {
     border: 2px solid white;
     display: flex;
     flex-direction: column;
@@ -70,6 +75,10 @@ main {
     height: 7vmin;
     width: 7vmin;
     padding: 2vmin;
+}
+.memory {
+    height: 5vmin;
+    width: 5vmin;
 }
 div.item-container[data-chosen='true'] {
     background-color: blue;
