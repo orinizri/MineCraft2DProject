@@ -1,4 +1,3 @@
-
 let inventory = document.querySelector("#inventory")
 let gameBoard = document.querySelector("#game-board")
 let memorySection = document.querySelector("#memory")
@@ -70,6 +69,7 @@ function setInventory(ItemsObj) {
 let lastPosition = [];
 
 function getPosition() {
+    console.log("getPosition activated")
     divs.forEach((div) => {
         div.addEventListener("click", (e) => {
             let x = e.target.dataset.x
@@ -81,10 +81,23 @@ function getPosition() {
                 'type': type
             })
             removeWithTool()
+            console.log(lastPosition)
+            if (flag) {
+                console.log(e.target.dataset.type)
+                console.log(lastPosition[lastPosition.length -2]['type'])
+                    if (e.target.dataset.type === 'sky') {
+                    e.target.dataset.type = lastPosition[lastPosition.length -2]['type']
+                    lastPosition.pop()
+                    lastPosition.pop()
+                    memory.pop()
+                    updateMemory(memoryCell)
+                    flag = false;
+                }
+            }
         })
     })
+    console.log(lastPosition)
 }
-
 getPosition()
 buildWorld("ground", 0, 20, 15, 20);
 buildWorld("grassGround", 0, 20, 14, 14);
@@ -95,49 +108,40 @@ buildWorld("stone", 14, 15, 13, 13);
 buildWorld("stone", 19, 19, 13, 13);
 setInventory(ToolKit);
 
-function getItem() {
-    const items = document.querySelectorAll(".item-container")
-    items.forEach((item) => {
-        let itemChosen = item.firstElementChild
-        itemChosen.dataset.use = 'null';
-        item.firstElementChild.addEventListener("click", () => { // loop over item container's first child 
-            // toggle dataset-use attribute for item functionality (use - true/not use - false)
-            if (itemChosen.dataset.use === 'true' && activeTool.length === 1) {
-                itemChosen.dataset.use = false;
-            } else if (activeTool.length === 0) {
-                itemChosen.dataset.use = true;
-            }
-            item.dataset.chosen = itemChosen.dataset.use;
-        })
-    })
-    return items
-}
+
+
 
 const activeTool = [];
-function useItem() {
-    let items = getItem()
-    inventory.addEventListener("click", () => {
-        for (let item of items) {
-            console.log(item)
-            if (item.firstElementChild.dataset.use == "true") {
+function getItem() {
+    console.log("getItem activated")
+    const items = document.querySelectorAll(".item-container")
+    items.forEach((item) => {
+        item.firstElementChild.dataset.use = 'false';
+        item.firstElementChild.addEventListener("click", () => {
+            console.log("click")
+            if (item.firstElementChild.dataset.use === 'true') {
+                item.firstElementChild.dataset.use = false;
+                activeTool.pop();
+            } else if (item.firstElementChild.dataset.use === 'false') {
+                item.firstElementChild.dataset.use = true;
                 activeTool.push(item.firstElementChild.dataset.type)
-            } else if (item.firstElementChild.dataset.use == "false") {
-                activeTool.pop()
             }
-        }
-        console.log(activeTool)
+            item.dataset.chosen = item.firstElementChild.dataset.use;
+        })
     })
 }
-useItem()
 
+let buildMemory = false;
 let memory = [];
 function removeWithTool() {
-    if (lastPosition[lastPosition.length - 1]) {
+    console.log("removeWithTool activated")
+    if (lastPosition) {
         if (activeTool) {
-            if (memory.length === 0 &&
+            if ((!buildMemory) &&
                 lastPosition[lastPosition.length - 1]['type'] !== "sky" &&
                 lastPosition[lastPosition.length - 1]['type'] !== "cloud") {
-                createMemory(memoryCell)
+                    createMemory(memoryCell)
+                    buildMemory = true;
             }
             if ((lastPosition[lastPosition.length - 1]['type'] === 'ground' ||
                 lastPosition[lastPosition.length - 1]['type'] === 'grassGround') &&
@@ -173,9 +177,16 @@ function removeWithTool() {
         }
     }
 }
-removeWithTool()
+
+
+function main () {
+    console.log("main")
+    getItem()
+}
+main()
 
 function createMemory(numberOfCells) {
+    console.log("createMemory activated")
     for (let i = numberOfCells; i > 0; i--) {
         let newMemoryCell = document.createElement("div")
         newMemoryCell.classList.add("memory-container")
@@ -184,26 +195,55 @@ function createMemory(numberOfCells) {
     }
 }
 function updateMemory(numberOfCells) {
+    console.log("updateMemory activated")
     const memoryDiv = document.querySelectorAll(".memory-container")
     //console.log(memoryDiv)
     for (let i = -1, j = 0; i >= -numberOfCells; i--, j++) {
         memoryDiv[j].firstElementChild.dataset.type = memory[memory.length + (i)]
+        memoryDiv[j].dataset.chosen = false
     }
     return memoryDiv
 }
-
+let flag = false;
 function useMemory () {
-    const mc = document.querySelectorAll(".memory")
-    //console.log(mc)
-    let definedCells = Array.from(mc).filter( (cell) => {
+    console.log("useMemory activated")
+    const memoryCellDivs = document.querySelectorAll(".memory")
+    //console.log(memoryCell)
+    let items = document.querySelectorAll(".item-container") // Get Items (tools)
+    let activeMemoryCellDivs = Array.from(memoryCellDivs).filter( (cell) => {
             return (cell.dataset.type !== "undefined")
     })
-    //console.log(definedCells)
-    definedCells.forEach( (cell) => {
-        cell.addEventListener("click", () => {
-            // activeTool.pop()
-            console.log(cell.dataset)
+    // gets item off when memory is pressed 
+    activeMemoryCellDivs.forEach( (cell) => {
+        cell.addEventListener("click", (e) => {
+            //click on memory cell
+            let chosenItem = Array.from(items).filter( (itemContainer)=> {
+                return itemContainer.dataset.chosen === 'true'
+            })
+            if (chosenItem.length === 1) {
+                chosenItem[0].dataset.chosen = false;
+                activeTool.pop()
+            }
+            // let isBuildingMemory = buildWithMemory(e) // get memory cell event
+            if (buildWithMemory(e)) {
+                flag = true; // chose memory item to use 
+                updateMemory()
+            }
         })
 
     })
+}
+function buildWithMemory (e) {
+    console.log("buildWithMemory activated")
+    // Choosing memoryCell
+    if (e.path[0].dataset.chosen !== "true") {    
+        e.path[0].dataset.chosen = true;
+        e.path[1].dataset.chosen = true;
+        console.log(e.path[0].dataset)
+        return true
+    } else if (e.path[0].dataset.chosen === "true") {
+        e.path[0].dataset.chosen = false;
+        e.path[1].dataset.chosen = false;
+        return false
+    }
 }

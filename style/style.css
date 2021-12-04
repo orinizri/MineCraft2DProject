@@ -80,6 +80,9 @@ main {
     height: 5vmin;
     width: 5vmin;
 }
+.memory-container[data-chosen='true'] {
+    border: 2px solid blue;
+}
 div.item-container[data-chosen='true'] {
     background-color: blue;
     border: 2px solid white;
