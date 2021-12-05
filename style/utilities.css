@@ -1,7 +1,7 @@
 :root {
     --sky-color: #8DBFFF;
+    --background-color: rgb(65, 63, 61);
 }
-
 body {
     height: 100vh;
     width: 100vw;
@@ -10,7 +10,7 @@ body {
     align-items: center;
     margin: 0;
     padding:0;
-    background-color: rgb(65, 63, 61);
+    background-color: var(--background-color);
     max-width:100%;
     font-size: 8px;;
 }
@@ -18,7 +18,6 @@ section {
     background-color: white;
 }
 main {
-    background-color: #ccc;
     width: 85vmax;
     height: 100vmin;
     display: grid;
@@ -31,11 +30,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(65, 63, 61);
+    background-color: var(--background-color);
     max-width:100%;
 }
 main {
-    background-color: #ccc;
     width: 100vmin;
     height: 100vmin;
     display: flex;
@@ -137,7 +135,6 @@ div[data-status='removed'] {
     width: 1vmin;
     height: 1vmin;
     margin: 1vmin;
-    
 }
 .brick {
     cursor: pointer;

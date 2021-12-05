@@ -1,9 +1,8 @@
-let inventory = document.querySelector("#inventory")
-let gameBoard = document.querySelector("#game-board")
-let memorySection = document.querySelector("#memory")
-
+const inventory = document.querySelector("#inventory")
+const gameBoard = document.querySelector("#game-board")
+const memorySection = document.querySelector("#memory")
 const memoryCell = 3;
-let matrix = []
+const matrix = []
 
 const Material = {
     sky: { name: "sky", id: 0 },
@@ -69,7 +68,6 @@ function setInventory(ItemsObj) {
 let lastPosition = [];
 
 function getPosition() {
-    console.log("getPosition activated")
     divs.forEach((div) => {
         div.addEventListener("click", (e) => {
             let x = e.target.dataset.x
@@ -81,10 +79,7 @@ function getPosition() {
                 'type': type
             })
             removeWithTool()
-            console.log(lastPosition)
             if (flag) {
-                console.log(e.target.dataset.type)
-                console.log(lastPosition[lastPosition.length -2]['type'])
                     if (e.target.dataset.type === 'sky') {
                     e.target.dataset.type = lastPosition[lastPosition.length -2]['type']
                     lastPosition.pop()
@@ -96,7 +91,6 @@ function getPosition() {
             }
         })
     })
-    console.log(lastPosition)
 }
 getPosition()
 buildWorld("ground", 0, 20, 15, 20);
@@ -109,16 +103,12 @@ buildWorld("stone", 19, 19, 13, 13);
 setInventory(ToolKit);
 
 
-
-
 const activeTool = [];
 function getItem() {
-    console.log("getItem activated")
     const items = document.querySelectorAll(".item-container")
     items.forEach((item) => {
         item.firstElementChild.dataset.use = 'false';
         item.firstElementChild.addEventListener("click", () => {
-            console.log("click")
             if (item.firstElementChild.dataset.use === 'true') {
                 item.firstElementChild.dataset.use = false;
                 activeTool.pop();
@@ -130,11 +120,11 @@ function getItem() {
         })
     })
 }
+getItem()
 
 let buildMemory = false;
 let memory = [];
 function removeWithTool() {
-    console.log("removeWithTool activated")
     if (lastPosition) {
         if (activeTool) {
             if ((!buildMemory) &&
@@ -178,15 +168,7 @@ function removeWithTool() {
     }
 }
 
-
-function main () {
-    console.log("main")
-    getItem()
-}
-main()
-
 function createMemory(numberOfCells) {
-    console.log("createMemory activated")
     for (let i = numberOfCells; i > 0; i--) {
         let newMemoryCell = document.createElement("div")
         newMemoryCell.classList.add("memory-container")
@@ -195,9 +177,7 @@ function createMemory(numberOfCells) {
     }
 }
 function updateMemory(numberOfCells) {
-    console.log("updateMemory activated")
     const memoryDiv = document.querySelectorAll(".memory-container")
-    //console.log(memoryDiv)
     for (let i = -1, j = 0; i >= -numberOfCells; i--, j++) {
         memoryDiv[j].firstElementChild.dataset.type = memory[memory.length + (i)]
         memoryDiv[j].dataset.chosen = false
@@ -206,9 +186,7 @@ function updateMemory(numberOfCells) {
 }
 let flag = false;
 function useMemory () {
-    console.log("useMemory activated")
     const memoryCellDivs = document.querySelectorAll(".memory")
-    //console.log(memoryCell)
     let items = document.querySelectorAll(".item-container") // Get Items (tools)
     let activeMemoryCellDivs = Array.from(memoryCellDivs).filter( (cell) => {
             return (cell.dataset.type !== "undefined")
@@ -224,7 +202,6 @@ function useMemory () {
                 chosenItem[0].dataset.chosen = false;
                 activeTool.pop()
             }
-            // let isBuildingMemory = buildWithMemory(e) // get memory cell event
             if (buildWithMemory(e)) {
                 flag = true; // chose memory item to use 
                 updateMemory()
@@ -233,13 +210,11 @@ function useMemory () {
 
     })
 }
+// Choosing memoryCell
 function buildWithMemory (e) {
-    console.log("buildWithMemory activated")
-    // Choosing memoryCell
     if (e.path[0].dataset.chosen !== "true") {    
         e.path[0].dataset.chosen = true;
         e.path[1].dataset.chosen = true;
-        console.log(e.path[0].dataset)
         return true
     } else if (e.path[0].dataset.chosen === "true") {
         e.path[0].dataset.chosen = false;
